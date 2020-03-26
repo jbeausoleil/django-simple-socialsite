@@ -33,6 +33,7 @@ class UserPosts(generic.ListView):
         context = super().get_context_data(**kwargs)
         context['post_user'] = self.post_user
 
+
 class PostDetail(SelectRelatedMixin, generic.DetailView):
     model = models.Post
     select_related = ('user', 'group')
@@ -40,7 +41,7 @@ class PostDetail(SelectRelatedMixin, generic.DetailView):
     def get_queryset(self):
         queryset = super().get_queryset()
         return queryset.filter(user__username__iexact=self.kwargs.get('username'))
-    
+
 
 class CreatePost(LoginRequiredMixin, SelectRelatedMixin, generic.CreateView):
     fields = ('message', 'group')
@@ -63,5 +64,5 @@ class DeletePost(LoginRequiredMixin, SelectRelatedMixin, generic.DeleteView):
         return queryset.filter(user_id=request.user.id)
 
     def delete(self, *args, **kwargs):
-        messages.success(self.request,'Post Deleted')
+        messages.success(self.request, 'Post Deleted')
         return super().delete(*args, **kwargs)
