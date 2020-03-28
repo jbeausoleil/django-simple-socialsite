@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views import generic
 
@@ -44,12 +44,18 @@ class PostDetail(SelectRelatedMixin, generic.DetailView):
 
 
 class CreatePost(LoginRequiredMixin, SelectRelatedMixin, generic.CreateView):
-    fields = ('message', 'group')
-    models = models.Post
+    form_class = forms.PostForm
+    model = models.Post
+    template_name = 'posts/post_form.html'
+
+    def get_form_kwargs(self, *args, **kwargs):
+        kwargs = super().get_form_kwargs(*args, **kwargs)
+        kwargs['user'] = self.request.user
+        return kwargs
 
     def form_valid(self, form):
-        self.object = form.save(commmit=False)
-        self.object.user = self.request.user
+        self.object = form.save(commit=False)
+        self.user = self.request.user
         self.object.save()
         return super().form_valid(form)
 

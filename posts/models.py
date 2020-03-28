@@ -5,7 +5,7 @@ from django.conf import settings
 
 import misaka
 
-from groups.models import Group # Connect posts to groups
+from groups.models import Group  # Connect posts to groups
 
 # Get logged in user for posting
 User = get_user_model()
@@ -23,11 +23,11 @@ class Post(models.Model):
 
     def save(self, *args, **kwargs):
         self.message_html = misaka.html(self.message)
-        super().save(*args,**kwargs)
+        super().save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse('posts:single', kwargs={'username': self.user.username, 'pk': self.pk})
 
     class Meta:
         ordering = ['-created_at']
-        unique_together = ('user', 'message')   # Every message is uniquely matched to a user
+        unique_together = ['user', 'message']  # Every message is uniquely matched to a user

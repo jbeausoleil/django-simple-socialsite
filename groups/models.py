@@ -1,10 +1,10 @@
 from django import template
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.urls import reverse
 from django.utils.text import slugify
 
 import misaka
-
 
 User = get_user_model()
 register = template.Library()
@@ -26,7 +26,7 @@ class Group(models.Model):
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse('groups:single', kwargs={'slug':self.slug})
+        return reverse('groups:single', kwargs={'slug': self.slug})
 
     class Meta:
         ordering = ['name']
@@ -37,7 +37,7 @@ class GroupMember(models.Model):
     user = models.ForeignKey(User, related_name='user_groups', on_delete=models.CASCADE)
 
     def __str__(self):
-        self.user.username
+        return self.user.username
 
     class Meta:
         unique_together = ('group', 'user')

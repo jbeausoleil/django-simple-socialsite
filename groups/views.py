@@ -30,9 +30,9 @@ class JoinGroup(LoginRequiredMixin, generic.RedirectView):
         try:
             GroupMember.objects.create(user=self.request.user, group=group)
         except:
-            messages.warning(self.request, 'Warning, already a member of {}!'.format(group))
+            messages.warning(self.request, 'Warning, already a member of {}!'.format(group.name))
         else:
-            messages.success(self.request, 'You are now a member of {}!'.format(group))
+            messages.success(self.request, 'You are now a member of {}!'.format(group.name))
         return super().get(request, *args, **kwargs)
 
 
@@ -44,9 +44,10 @@ class LeaveGroup(LoginRequiredMixin, generic.RedirectView):
     def get(self, request, *args, **kwargs):
         group = get_object_or_404(Group, slug=self.kwargs.get('slug'))
         try:
-            membership = GroupMember.objects.filter(user=self.request.user, group__slug=self.kwargs.get('slug')).get()
+            membership = GroupMember.objects.filter(user=self.request.user, group__slug=self.kwargs.get('slug'))
         except GroupMember.DoesNotExist:
-            messages.warning(self.request, 'Sorry you are not in {}.'.format(group))
+            messages.warning(self.request, 'Sorry you are not in {}.'.format(group.name))
         else:
-            messages.success(self.request, 'You have successfully left {}.'.format(group))
+            membership.delete()
+            messages.success(self.request, 'You have successfully left {}.'.format(group.name))
         return super().get(request, *args, **kwargs)
